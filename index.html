@@ -19,6 +19,7 @@
             --sky-top: #9edcff;
             --sky-bottom: #e8f8ff;
             --water: #226e95;
+            --body-image: none;
         }
 
         * { box-sizing: border-box; }
@@ -26,44 +27,262 @@
         body {
             margin: 0;
             font-family: Arial, Helvetica, sans-serif;
-            background: linear-gradient(180deg, var(--sky-top) 0%, var(--sky-bottom) 35%, var(--water) 70%, #e8b96c 85%, #f2c96d 100%);
+            background-color: #0d2536;
+            background-image: var(--body-image);
+            background-position: center, center;
+            background-repeat: no-repeat, no-repeat;
+            background-size: cover, cover;
             color: var(--text);
             min-height: 100vh;
             position: relative;
             overflow-x: hidden;
+            transition: background-image 0.8s ease-in-out;
         }
 
-        body::before,
-        body::after {
-            content: "";
+        .top-bar {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            padding: 0.8rem 1.25rem;
+            background: rgba(7, 19, 31, 0.88);
+            color: #f8fbff;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 24px rgba(7, 19, 31, 0.16);
+        }
+
+        .top-bar-group {
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+            flex-wrap: wrap;
+        }
+
+        .top-bar-pill {
+            padding: 0.35rem 0.7rem;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.16);
+            font-size: 0.92rem;
+            font-weight: 700;
+        }
+
+        .settings-button {
+            border: none;
+            border-radius: 999px;
+            padding: 0.55rem 0.9rem;
+            background: rgba(244, 162, 97, 0.95);
+            color: #fff;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .settings-button:hover {
+            background: rgba(244, 162, 97, 0.86);
+        }
+
+        .settings-overlay {
             position: fixed;
+            inset: 0;
+            z-index: 30;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.25rem;
+            background: rgba(7, 19, 31, 0.56);
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.24s ease, visibility 0.24s ease;
+        }
+
+        .settings-overlay.open {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .settings-panel {
+            width: min(92vw, 430px);
+            background: rgba(255, 255, 255, 0.96);
+            color: var(--text);
+            border-radius: 24px;
+            padding: 1.2rem;
+            box-shadow: 0 24px 60px rgba(7, 19, 31, 0.24);
+            transform: scale(0.92);
+            opacity: 0;
+            transition: transform 0.24s ease, opacity 0.24s ease;
+        }
+
+        .settings-overlay.open .settings-panel {
+            transform: scale(1);
+            opacity: 1;
+        }
+
+        .settings-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.75rem;
+            margin-bottom: 0.9rem;
+        }
+
+        .settings-header h2 {
+            margin: 0;
+            font-size: 1.2rem;
+        }
+
+        .settings-tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 0.95rem;
+            flex-wrap: wrap;
+        }
+
+        .settings-tab {
+            border: none;
+            border-radius: 999px;
+            padding: 0.45rem 0.75rem;
+            background: rgba(18, 54, 74, 0.08);
+            color: var(--text);
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .settings-tab.active {
+            background: var(--accent2);
+            color: white;
+        }
+
+        .settings-panel-section {
+            display: none;
+        }
+
+        .settings-panel-section.active {
+            display: block;
+        }
+
+        .settings-close {
+            border: none;
+            width: 2rem;
+            height: 2rem;
+            border-radius: 999px;
+            background: rgba(18, 54, 74, 0.1);
+            color: var(--text);
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .setting-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.75rem;
+            padding: 0.8rem 0;
+            border-top: 1px solid rgba(18, 54, 74, 0.12);
+        }
+
+        .setting-item:first-of-type {
+            border-top: none;
+        }
+
+        .setting-item select {
+            border: 1px solid rgba(18, 54, 74, 0.16);
+            border-radius: 999px;
+            padding: 0.45rem 0.7rem;
+            background: rgba(255, 255, 255, 0.9);
+            color: var(--text);
+            font: inherit;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-flex;
+            width: 46px;
+            height: 26px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            inset: 0;
+            border-radius: 999px;
+            background: rgba(18, 54, 74, 0.2);
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .slider::before {
+            content: "";
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            left: 3px;
+            top: 3px;
             border-radius: 50%;
-            background: rgba(255, 255, 255, 0.7);
-            filter: blur(2px);
-            z-index: 0;
-            pointer-events: none;
+            background: white;
+            transition: transform 0.2s ease;
         }
 
-        body::before {
-            width: 220px;
-            height: 80px;
-            top: 80px;
-            left: 8%;
-            opacity: 0.8;
+        .switch input:checked + .slider {
+            background: var(--accent2);
         }
 
-        body::after {
-            width: 300px;
-            height: 100px;
-            top: 140px;
-            right: 6%;
-            opacity: 0.65;
+        .switch input:checked + .slider::before {
+            transform: translateX(20px);
+        }
+
+        .settings-help {
+            margin: 0.75rem 0 0;
+            color: var(--muted);
+            font-size: 0.92rem;
+            line-height: 1.5;
+        }
+
+        body.dark-mode {
+            --text: #f8fbff;
+            --muted: #cbd5e1;
+            --accent2: #4fd1c5;
+        }
+
+        body.dark-mode .top-bar {
+            background: rgba(2, 6, 23, 0.94);
+        }
+
+        body.dark-mode .hero,
+        body.dark-mode .main-panel,
+        body.dark-mode .gallery-panel,
+        body.dark-mode .settings-panel,
+        body.dark-mode .card,
+        body.dark-mode .status-card,
+        body.dark-mode .chat-message,
+        body.dark-mode .rank-entry,
+        body.dark-mode .mod-card,
+        body.dark-mode .video-item {
+            background: rgba(15, 23, 42, 0.86);
+            border-color: rgba(255, 255, 255, 0.1);
+            color: var(--text);
+        }
+
+        body.dark-mode .settings-panel {
+            background: rgba(15, 23, 42, 0.96);
+        }
+
+        body.dark-mode .settings-close,
+        body.dark-mode .setting-item select {
+            background: rgba(255, 255, 255, 0.12);
+            color: var(--text);
         }
 
         .page {
             max-width: 960px;
             margin: 0 auto;
-            padding: 2rem 1.25rem 4rem;
+            padding: 1.25rem 1.25rem 4rem;
             position: relative;
             z-index: 1;
         }
@@ -406,6 +625,35 @@
             line-height: 1.6;
         }
 
+        .video-list {
+            list-style: none;
+            padding: 0;
+            margin: 0.75rem 0 0;
+            display: grid;
+            gap: 0.6rem;
+        }
+
+        .video-item {
+            padding: 0.75rem 0.85rem;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.68);
+            border: 1px solid rgba(18, 54, 74, 0.08);
+        }
+
+        .video-link {
+            color: var(--accent2);
+            font-weight: 700;
+            text-decoration: none;
+            word-break: break-word;
+        }
+
+        .video-meta {
+            display: block;
+            margin-top: 0.25rem;
+            color: var(--muted);
+            font-size: 0.9rem;
+        }
+
         .gallery-panel {
             margin-top: 1.5rem;
             background: rgba(255, 255, 255, 0.72);
@@ -537,10 +785,67 @@
             .hero {
                 padding: 1.5rem;
             }
+
+            .top-bar {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
         }
     </style>
 </head>
 <body>
+    <header class="top-bar" aria-label="Page status bar">
+        <div class="top-bar-group">
+            <span class="top-bar-pill" id="active-users-pill">Active users: 0</span>
+            <span class="top-bar-pill" id="top-bar-time">Time: --:--</span>
+        </div>
+        <div class="top-bar-group">
+            <button class="settings-button" id="settings-toggle" type="button" aria-expanded="false">Settings</button>
+        </div>
+    </header>
+
+    <div class="settings-overlay" id="settings-overlay" aria-hidden="true">
+        <div class="settings-panel" role="dialog" aria-modal="true" aria-labelledby="settings-title">
+            <div class="settings-header">
+                <h2 id="settings-title">Settings</h2>
+                <button class="settings-close" id="settings-close" type="button" aria-label="Close settings">×</button>
+            </div>
+            <div class="settings-tabs" role="tablist" aria-label="Settings tabs">
+                <button class="settings-tab active" id="settings-tab-main" type="button" role="tab" aria-selected="true" aria-controls="settings-panel-main">Main</button>
+                <button class="settings-tab" id="settings-tab-debug" type="button" role="tab" aria-selected="false" aria-controls="settings-panel-debug">Debug</button>
+            </div>
+            <section class="settings-panel-section active" id="settings-panel-main" role="tabpanel" aria-labelledby="settings-tab-main">
+                <label class="setting-item" for="dark-mode-toggle">
+                    <span id="dark-mode-label">Dark mode</span>
+                    <span class="switch">
+                        <input type="checkbox" id="dark-mode-toggle">
+                        <span class="slider"></span>
+                    </span>
+                </label>
+                <p class="settings-help" id="settings-help">Changes apply instantly and are remembered on this device.</p>
+            </section>
+            <section class="settings-panel-section" id="settings-panel-debug" role="tabpanel" aria-labelledby="settings-tab-debug">
+                <div class="setting-item">
+                    <span>Background change</span>
+                    <strong id="debug-background-time">10 min</strong>
+                </div>
+                <div class="setting-item">
+                    <span>Current background</span>
+                    <strong id="debug-current-background">Loading...</strong>
+                </div>
+                <div class="setting-item">
+                    <span>Server status</span>
+                    <strong id="debug-server-status">Checking...</strong>
+                </div>
+                <div class="setting-item">
+                    <span>Local time</span>
+                    <strong id="debug-local-time">--:--</strong>
+                </div>
+                <p class="settings-help">This panel shows runtime information for troubleshooting and testing.</p>
+            </section>
+        </div>
+    </div>
+
     <main class="page">
         <section class="hero">
             <div class="badge-row">
@@ -599,11 +904,11 @@
             <p>These are the current main ranks shown in the server’s UI.</p>
             <div class="rank-list">
                 <div class="rank-entry">
-                    <span class="player-name">FLATERIC0</span>
+                    <span class="player-name">FLATERIC0 <a href="https://www.youtube.com/@FLATERICOH2" target="_blank" rel="noopener noreferrer" style="color: var(--accent2); text-decoration: none;">https://www.youtube.com/@FLATERICOH2</a></span>
                     <span class="rank-badge">Owner</span>
                 </div>
                 <div class="rank-entry">
-                    <span class="player-name">CHIPDUDEYT</span>
+                    <span class="player-name">CHIPDUDEYT <a href="https://www.youtube.com/@chipdudereal" target="_blank" rel="noopener noreferrer" style="color: var(--accent2); text-decoration: none;">https://www.youtube.com/@chipdudereal</a></span>
                     <span class="rank-badge co-owner">Co-owner</span>
                 </div>
             </div>
@@ -626,6 +931,24 @@
                 </div>
             </div>
             <p style="margin-top: 1rem; text-align: center; color: var(--muted);">More mods soon!</p>
+        </section>
+
+        <section class="main-panel" aria-label="Fishtank video spotlight">
+            <h2>Fishtank video spotlight</h2>
+            <p>Videos coming soon! we need you to post videos @ing/pinging @FLATERICOH2 or @chipdudereal</p>
+        </section>
+
+        <section class="main-panel" aria-label="Main devs newest videos">
+            <h2>Main Devs Newest Videos</h2>
+            <p>Recent videos from the main developers can be shown here once a public feed is available.</p>
+            <div class="status-card">
+                <div class="status-row">
+                    <span class="status-dot" id="youtube-status-dot"></span>
+                    <strong id="youtube-status-label">Checking feed...</strong>
+                </div>
+                <p class="status-detail" id="youtube-status-detail">Waiting for YouTube data feed.</p>
+                <ul class="video-list" id="youtube-video-list"></ul>
+            </div>
         </section>
 
         <section class="gallery-panel" aria-label="Server photo gallery">
@@ -663,8 +986,8 @@
             </div>
         </div>
 
-        <footer>
-            Fishtank • Built by some dumbass with a computer i guess.
+        <footer id="site-footer">
+            Fishtank • Built by some dumbass with a computer i guess. • Website version: 1.0.1 • update time: 28/6/26 2:15AM
         </footer>
     </main>
 
@@ -680,8 +1003,172 @@
         const statusDetail = document.getElementById('status-detail');
         const chatFeed = document.getElementById('chat-feed');
         const chatStatus = document.getElementById('chat-status');
+        const activeUsersPill = document.getElementById('active-users-pill');
+        const topBarTime = document.getElementById('top-bar-time');
+        const settingsToggle = document.getElementById('settings-toggle');
+        const settingsOverlay = document.getElementById('settings-overlay');
+        const settingsClose = document.getElementById('settings-close');
+        const darkModeToggle = document.getElementById('dark-mode-toggle');
+        const settingsHelp = document.getElementById('settings-help');
+        const settingsTitle = document.getElementById('settings-title');
+        const settingsTabMain = document.getElementById('settings-tab-main');
+        const settingsTabDebug = document.getElementById('settings-tab-debug');
+        const settingsPanelMain = document.getElementById('settings-panel-main');
+        const settingsPanelDebug = document.getElementById('settings-panel-debug');
+        const debugBackgroundTime = document.getElementById('debug-background-time');
+        const debugCurrentBackground = document.getElementById('debug-current-background');
+        const debugServerStatus = document.getElementById('debug-server-status');
+        const debugLocalTime = document.getElementById('debug-local-time');
+        const youtubeStatusDot = document.getElementById('youtube-status-dot');
+        const youtubeStatusLabel = document.getElementById('youtube-status-label');
+        const youtubeStatusDetail = document.getElementById('youtube-status-detail');
+        const youtubeVideoList = document.getElementById('youtube-video-list');
         const serverAddress = 'n-nyc-15.folium.host:25300';
+        const footerText = 'Fishtank • Built by some dumbass with a computer i guess. • Website version: 1.0.1 • post time: 28/6/26 2:15AM';
         const chatFeedUrl = '';
+        const backgroundImages = [
+            'pictures/2026-06-16_23.29.03.png',
+            'pictures/2026-06-16_23.32.14.png',
+            'pictures/2026-06-17_17.17.45.png',
+            'pictures/2026-06-17_17.20.30.png',
+            'pictures/2026-06-17_17.21.31.png',
+            'pictures/2026-06-17_21.32.34.png',
+            'pictures/2026-06-19_18.22.25.png',
+            'pictures/2026-06-19_23.59.21.png',
+            'pictures/2026-06-21_13.23.40.png',
+            'pictures/chipdudeyt1.png',
+            'pictures/chipdudeyt2.png',
+            'pictures/chipdudeyt3.png',
+            'pictures/chipdudeyt4.png'
+        ];
+        const youtubeFeedUrl = './youtube-videos.json';
+        const minecraftScreenshotPattern = /\.(png|jpg|jpeg|webp)$/i;
+        let backgroundIndex = 0;
+
+        function updateTopBarTime() {
+            const now = new Date();
+            const timeText = now.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+            topBarTime.textContent = `Time: ${timeText}`;
+            debugLocalTime.textContent = timeText;
+        }
+
+        function rotateBackground() {
+            const imagePath = backgroundImages[backgroundIndex];
+            document.documentElement.style.setProperty('--body-image', `url('${imagePath}')`);
+            debugCurrentBackground.textContent = imagePath.replace('pictures/', '');
+            backgroundIndex = (backgroundIndex + 1) % backgroundImages.length;
+        }
+
+        function escapeText(value) {
+            return String(value ?? '').replace(/[&<>"']/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
+        }
+
+        function isSafeVideoUrl(value) {
+            try {
+                const url = new URL(value);
+                return ['https:', 'http:'].includes(url.protocol) && ['www.youtube.com', 'm.youtube.com', 'youtu.be'].includes(url.hostname);
+            } catch {
+                return false;
+            }
+        }
+
+        function createVideoItem(video) {
+            const listItem = document.createElement('li');
+            listItem.className = 'video-item';
+
+            const link = document.createElement('a');
+            link.className = 'video-link';
+            link.href = isSafeVideoUrl(video.url) ? video.url : '#';
+            link.target = '_blank';
+            link.rel = 'noopener noreferrer';
+            link.textContent = escapeText(video.title || 'Untitled video');
+
+            listItem.appendChild(link);
+
+            if (video.author || video.publishedAt) {
+                const meta = document.createElement('small');
+                meta.className = 'video-meta';
+                const parts = [];
+                if (video.author) parts.push(escapeText(video.author));
+                if (video.publishedAt) parts.push(escapeText(video.publishedAt));
+                meta.innerHTML = parts.join(' • ');
+                listItem.appendChild(meta);
+            }
+
+            return listItem;
+        }
+
+        async function refreshYoutubeVideos() {
+            youtubeStatusDot.style.background = '#f4d35e';
+            youtubeStatusLabel.textContent = 'Checking feed...';
+            youtubeStatusDetail.textContent = 'Requesting the configured video feed.';
+            youtubeVideoList.replaceChildren();
+
+            try {
+                const response = await fetch(youtubeFeedUrl, { cache: 'no-store' });
+                if (!response.ok) {
+                    throw new Error(`Feed returned ${response.status}`);
+                }
+
+                const data = await response.json();
+                const videos = Array.isArray(data) ? data : (Array.isArray(data.videos) ? data.videos : []);
+                const safeVideos = videos
+                    .filter((video) => video && isSafeVideoUrl(video.url))
+                    .slice(0, 5);
+
+                if (safeVideos.length === 0) {
+                    youtubeStatusDot.style.background = '#f4a261';
+                    youtubeStatusLabel.textContent = 'No videos';
+                    youtubeStatusDetail.textContent = 'The feed loaded, but no safe video entries were found.';
+                    const emptyItem = document.createElement('li');
+                    emptyItem.className = 'video-item';
+                    emptyItem.textContent = 'No recent videos available right now.';
+                    youtubeVideoList.appendChild(emptyItem);
+                    return;
+                }
+
+                safeVideos.forEach((video) => youtubeVideoList.appendChild(createVideoItem(video)));
+                youtubeStatusDot.style.background = '#2a9d8f';
+                youtubeStatusLabel.textContent = 'Feed loaded';
+                youtubeStatusDetail.textContent = `Showing ${safeVideos.length} safe video link(s) from the configured feed.`;
+            } catch (error) {
+                youtubeStatusDot.style.background = '#f4a261';
+                youtubeStatusLabel.textContent = 'Feed unavailable';
+                youtubeStatusDetail.textContent = 'YouTube data could not be loaded safely.';
+                const fallbackItem = document.createElement('li');
+                fallbackItem.className = 'video-item';
+                fallbackItem.textContent = 'No recent videos available right now.';
+                youtubeVideoList.appendChild(fallbackItem);
+            }
+        }
+
+        function applyTheme(isDark) {
+            document.body.classList.toggle('dark-mode', isDark);
+            darkModeToggle.checked = isDark;
+            localStorage.setItem('fishtank-dark-mode', String(isDark));
+        }
+
+        function openSettings() {
+            settingsOverlay.classList.add('open');
+            settingsOverlay.setAttribute('aria-hidden', 'false');
+            settingsToggle.setAttribute('aria-expanded', 'true');
+        }
+
+        function closeSettings() {
+            settingsOverlay.classList.remove('open');
+            settingsOverlay.setAttribute('aria-hidden', 'true');
+            settingsToggle.setAttribute('aria-expanded', 'false');
+        }
+
+        function switchSettingsTab(tab) {
+            const isDebug = tab === 'debug';
+            settingsTabMain.classList.toggle('active', !isDebug);
+            settingsTabDebug.classList.toggle('active', isDebug);
+            settingsTabMain.setAttribute('aria-selected', String(!isDebug));
+            settingsTabDebug.setAttribute('aria-selected', String(isDebug));
+            settingsPanelMain.classList.toggle('active', !isDebug);
+            settingsPanelDebug.classList.toggle('active', isDebug);
+        }
 
         function renderChat(messages) {
             if (!messages || messages.length === 0) {
@@ -741,6 +1228,8 @@
                     statusDot.style.background = '#2a9d8f';
                     statusLabel.textContent = 'Live';
                     playerCount.textContent = `${onlineCount} online`;
+                    activeUsersPill.textContent = `Active users: ${onlineCount}`;
+                    debugServerStatus.textContent = 'Live';
                     statusDetail.textContent = 'Server is online at Fishtank.folium.lol';
                 } else {
                     statusDot.style.background = '#f4a261';
@@ -752,6 +1241,8 @@
                 statusDot.style.background = '#f4a261';
                 statusLabel.textContent = 'Unavailable';
                 playerCount.textContent = 'Unknown';
+                activeUsersPill.textContent = 'Active users: ?';
+                debugServerStatus.textContent = 'Unavailable';
                 statusDetail.textContent = 'Live status could not be loaded.';
             }
         }
@@ -788,15 +1279,52 @@
         closeButton.addEventListener('click', closeLightbox);
 
         document.addEventListener('keydown', (event) => {
-            if (event.key === 'Escape' && lightbox.classList.contains('open')) {
-                closeLightbox();
+            if (event.key === 'Escape') {
+                if (lightbox.classList.contains('open')) {
+                    closeLightbox();
+                }
+                if (settingsOverlay.classList.contains('open')) {
+                    closeSettings();
+                }
             }
         });
 
+        settingsToggle.addEventListener('click', (event) => {
+            event.stopPropagation();
+            if (settingsOverlay.classList.contains('open')) {
+                closeSettings();
+            } else {
+                openSettings();
+            }
+        });
+
+        settingsClose.addEventListener('click', closeSettings);
+
+        settingsTabMain.addEventListener('click', () => switchSettingsTab('main'));
+        settingsTabDebug.addEventListener('click', () => switchSettingsTab('debug'));
+
+        settingsOverlay.addEventListener('click', (event) => {
+            if (event.target === settingsOverlay) {
+                closeSettings();
+            }
+        });
+
+        darkModeToggle.addEventListener('change', (event) => {
+            applyTheme(event.target.checked);
+        });
+
+        applyTheme(localStorage.getItem('fishtank-dark-mode') === 'true');
+        debugBackgroundTime.textContent = '5 sec';
+        rotateBackground();
+        updateTopBarTime();
+        setInterval(rotateBackground, 5000);
+        setInterval(updateTopBarTime, 1000);
         refreshServerStatus();
         refreshChatFeed();
+        refreshYoutubeVideos();
         setInterval(refreshServerStatus, 60000);
         setInterval(refreshChatFeed, 15000);
+        setInterval(refreshYoutubeVideos, 30000);
 
     </script>
 </body>
